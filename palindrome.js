@@ -19,4 +19,29 @@ function isPalindrome(text) {
 	return true;
 }
 
-isPalindrome('racecar'); // => true
+// Functional version
+const isPalindromeF = word => word === word.split('').reverse().join('');
+
+// Find all the palindrome pairs in a sentence
+const palindromPairs = words => {
+	const histogram = words.split(' ').reduce((pals, word) => {
+		if (isPalindromeF(word)) {
+			const { [word]: count = 0 } = pals;
+			return Object.assign({}, pals, { [word]: count + 1 });
+		}
+
+		return pals;
+	}, {});
+
+	const allPairs = Object.keys(histogram).reduce((pairs, word) => (
+		pairs.concat(histogram[word] > 1 ? word : [])
+	), []);
+
+	return allPairs;
+}
+
+console.log(isPalindrome('racecar')); // => true
+console.log(isPalindromeF('racecar'));
+console.log(isPalindromeF('notPalindrome'));
+
+console.log(palindromPairs('racecar dog cat cat racecar noon noon noon non'));

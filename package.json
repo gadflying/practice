@@ -1,0 +1,30 @@
+{
+  "name": "practice",
+  "version": "1.0.0",
+  "description": "Practice problems and real interview problems I completed.",
+  "main": "antipattern.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "./node_modules/.bin/eslint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yarunluon/practice.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yarunluon/practice/issues"
+  },
+  "homepage": "https://github.com/yarunluon/practice#readme",
+  "dependencies": {
+    "isomorphic-fetch": "^2.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^5.0.3",
+    "eslint-plugin-react": "^7.0.1"
+  }
+}
