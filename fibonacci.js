@@ -4,67 +4,105 @@
 // Version 1
 // O(1.618^n)
 function fibRecursive(n) {
-	return _fib(n);
+  return fibDeep(n);
 
-	function _fib(n) {
-		if (n <= 2) return 1;
-		return _fib(n-1) + _fib(n-2);
-	}
+  function fibDeep(n) {
+    if (n <= 2) return 1;
+    return fibDeep(n - 1) + fibDeep(n - 2);
+  }
 }
 
 // Version 2
 // Caches value for closer to O(1) performance. Less calls being made.
 function fibRecursiveCache(n) {
-	var cache = [];
+  const cache = [];
 
-	return _fib(n);
+  return fibDeep(n);
 
-	function _fib(n) {
-		if (n <= 2) return 1;
+  function fibDeep(n) {
+    if (n <= 2) return 1;
 
-		if (cache[n]) {
-			return cache[n];
-		}
+    if (cache[n]) {
+      return cache[n];
+    }
 
-		var value = _fib(n-1) + _fib(n-2);
-		cache[n] = value;
-		return value;
-	}	
+    const value = fibDeep(n - 1) + fibDeep(n - 2);
+    cache[n] = value;
+    return value;
+  }
 }
 
 // Version 3
 // Uses a normal for loop. Calculate from the beginning. O(n)
 function fibLoop(n) {
-	return _fib(n);
+  return fibDeep(n);
 
-	function _fib(n) {
-		if (n <= 2) return 1;
+  function fibDeep(n) {
+    if (n <= 2) return 1;
 
-		var i = 3;
-		var a = 1;
-		var b = 1;
-		var c;
-		while (i <= n) {
-			c = a + b;
-			a = b;
-			b = c;
-			i++;
-		}
+    let i = 3;
+    let a = 1;
+    let b = 1;
+    let c;
+    while (i <= n) {
+      c = a + b;
+      a = b;
+      b = c;
+      i += 1;
+    }
 
-		return c;
-	}
+    return c;
+  }
 }
 
 function fibLoop2(n) {
-	var a = 1, b = 1, c, i=2;
+  let a = 1,
+    b = 1,
+    c,
+    i = 2;
 
-	if (n <= 2) return 1;
-	while (i < n) {
-		c = a + b;
-		a = b;
-		b = c;
-		i++;
-	}
+  if (n <= 2) return 1;
+  while (i < n) {
+    c = a + b;
+    a = b;
+    b = c;
+    i += 1;
+  }
 
-	return c;
+  return c;
 }
+
+const fibR2 = (n) => {
+  const fibDeep = (nextN) => {
+    if (nextN <= 2) {
+      return 1;
+    }
+
+    return fibDeep(nextN - 1) + fibDeep(nextN - 2);
+  };
+
+  return fibDeep(n);
+};
+
+const fibR2Cache = (n) => {
+  const cache = [];
+  const fibDeep = (nextN) => {
+    if (nextN <= 2) {
+      return 1;
+    }
+
+    if (cache[nextN]) {
+      return cache[nextN];
+    }
+
+    const value = fibDeep(nextN - 1) + fibDeep(nextN - 2);
+    cache[nextN] = value;
+    return value;
+  };
+
+  return fibDeep(n);
+};
+
+console.log(fibR2(4));
+console.log(fibR2(10));
+console.log(fibR2Cache(100));
