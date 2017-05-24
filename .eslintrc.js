@@ -9,6 +9,7 @@ module.exports = {
     fetch: true,
   },
   rules: {
+    'comma-dangle': 'off',
     'no-console': 'off',
   }
 }
