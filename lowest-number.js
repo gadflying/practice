@@ -29,3 +29,14 @@ it('should get the next Id', () => {
   expect(getNextId([0, 1, 5, 6])).toEqual(2);
   expect(getNextId([100, 104, 101, 1000, 102])).toEqual(103);
 });
+
+export const P = () => {
+  let id = 0;
+
+  const getId = () => id;
+  const addId = () => { id += 1; };
+
+  return {
+    getId, addId,
+  };
+};
