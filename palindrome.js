@@ -1,44 +1,44 @@
 // Determine if a string is a palindrome
 
 function isPalindrome(text) {
-	// Have two pointers
-	// Start from ends of string and work toward center
-	// If ever the points do not equal then it's not a palindrome
+  // Have two pointers
+  // Start from ends of string and work toward center
+  // If ever the points do not equal then it's not a palindrome
 
-	var start = 0;
-	var end = text.length - 1;
+  let start = 0;
+  let end = text.length - 1;
 
-	while (start < end) {
-		if (text[start] !== text[end]) {
-			return false;
-		}
-		start++;
-		end--;
-	}
+  while (start < end) {
+    if (text[start] !== text[end]) {
+      return false;
+    }
+    start += 1;
+    end -= 1;
+  }
 
-	return true;
+  return true;
 }
 
 // Functional version
 const isPalindromeF = word => word === word.split('').reverse().join('');
 
 // Find all the palindrome pairs in a sentence
-const palindromPairs = words => {
-	const histogram = words.split(' ').reduce((pals, word) => {
-		if (isPalindromeF(word)) {
-			const { [word]: count = 0 } = pals;
-			return Object.assign({}, pals, { [word]: count + 1 });
-		}
+const palindromPairs = (words) => {
+  const histogram = words.split(' ').reduce((pals, word) => {
+    if (isPalindromeF(word)) {
+      const { [word]: count = 0 } = pals;
+      return Object.assign({}, pals, { [word]: count + 1 });
+    }
 
-		return pals;
-	}, {});
+    return pals;
+  }, {});
 
-	const allPairs = Object.keys(histogram).reduce((pairs, word) => (
-		pairs.concat(histogram[word] > 1 ? word : [])
-	), []);
+  const allPairs = Object.keys(histogram).reduce((pairs, word) => (
+  pairs.concat(histogram[word] > 1 ? word : [])
+  ), []);
 
-	return allPairs;
-}
+  return allPairs;
+};
 
 console.log(isPalindrome('racecar')); // => true
 console.log(isPalindromeF('racecar'));
