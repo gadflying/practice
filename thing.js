@@ -33,6 +33,28 @@ console.log(thing.get('x'));
 console.log(thing.get('y'));
 console.log(thing);
 
+const Thing2 = function Thing2() {
+  this.things = {};
+
+  return this;
+};
+
+Thing2.prototype = {
+  set: (key, value) => {
+    this.things[key] = value;
+  },
+  get: key => this.things[key],
+};
+
+const thing2 = new Thing();
+
+thing2.set('x', 'this is x2');
+thing2.set('y', 'this is y2');
+
+console.log(thing2.get('x'));
+console.log(thing2.get('y'));
+console.log(thing2);
+
 const Stuff = function Stuff() {
   const stuffs = {};
   const set = (key, value) => {
@@ -40,10 +62,7 @@ const Stuff = function Stuff() {
   };
   const get = key => stuffs[key];
 
-  return {
-    get,
-    set,
-  };
+  return { get, set };
 };
 
 const stuff = new Stuff();
@@ -54,4 +73,4 @@ console.log(stuff.get('x'));
 console.log(stuff.get('y'));
 console.log(stuff);
 
-console.log(Thing());
+// console.log(Thing());

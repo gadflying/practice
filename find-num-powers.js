@@ -18,6 +18,8 @@ function findNumPowersOfBNative(x, b) {
   }).length;
 }
 
+console.log(findNumPowersOfBNative([5, 4], 2));
+
 // Uses a for-loop and recursion
 function findNumPowersOfB(x, b) {
   let numPowers = 0;
