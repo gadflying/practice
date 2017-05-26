@@ -50,8 +50,8 @@ const palindromPairs2 = (words) => {
     if (pals[word]) {
       allPairs[word] = true;
     } else if (isPalindromeF(word)) {
-      const { [word]: count = 0 } = pals;
-      pals[word] = count + 1;
+      // const { [word]: count = 0 } = pals;
+      pals[word] = true;
     }
   });
 
@@ -64,3 +64,23 @@ console.log(isPalindromeF('notPalindrome'));
 
 console.log(palindromPairs('racecar dog cat cat racecar noon noon noon non'));
 console.log(palindromPairs2('racecar dog cat cat racecar noon noon noon non'));
+
+const pal = (word = '') => {
+  let left = 0;
+  let right = word.length - 1;
+  while (left < right) {
+    if (word[left] === word[right]) {
+      left += 1;
+      right -= 1;
+    } else {
+      return false;
+    }
+  }
+
+  return true && !!word;
+};
+
+console.log(pal('noon'));
+console.log(pal('cat'));
+console.log(pal('racecar'));
+console.log(pal(''));
