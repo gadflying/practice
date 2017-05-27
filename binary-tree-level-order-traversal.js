@@ -62,3 +62,28 @@ console.log(levelOrder2([3, 9, 7, 4, null, 1, 2, null, null, null, null, null, n
  * @param {TreeNode} root
  * @return {number[][]}
  */
+/* eslint-disable no-param-reassign */
+const levelOrder = (root) => {
+  const levelOrderDeep = (left, right, height, levels) => {
+    const nextHeight = height + 1;
+    if (left) {
+      levels[nextHeight] = (levels[nextHeight] || []).concat(left.val);
+      levelOrderDeep(left.left, left.right, nextHeight, levels);
+    }
+
+    if (right) {
+      levels[nextHeight] = (levels[nextHeight] || []).concat(right.val);
+      levelOrderDeep(right.left, right.right, nextHeight, levels);
+    }
+
+    return levels;
+  };
+
+  if (root === null) {
+    return [];
+  }
+
+  return levelOrderDeep(root.left, root.right, 0, [[root.val]]);
+};
+
+console.log(levelOrder([]));
