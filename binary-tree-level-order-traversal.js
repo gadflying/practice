@@ -24,21 +24,12 @@ OUTPUT
 ]
 **/
 
-/**
- * Definition for a binary tree node.
- * function TreeNode(val) {
- *     this.val = val;
- *     this.left = this.right = null;
- * }
- */
-/**
- * @param {TreeNode} root
- * @return {number[][]}
- */
-
-
 /** Only works for binary trees represented as arrays **/
-const levelOrder = (root = []) => {
+/**
+* @param {number[]} binary tree represented as an array
+* @returns {number[][]}
+**/
+const levelOrder2 = (root = []) => {
   const traversal = [];
   const getStartIndex = height => Math.pow(2, height) - 1;
 
@@ -55,7 +46,19 @@ const levelOrder = (root = []) => {
   return traversal;
 };
 
-console.log(levelOrder([]));
-console.log(levelOrder([2, null, 1]));
-console.log(levelOrder([3, 9, 20, null, null, 15, 7]));
-console.log(levelOrder([3, 9, 7, 4, null, 1, 2, null, null, null, null, null, null, null, 5]));
+console.log(levelOrder2([]));
+console.log(levelOrder2([2, null, 1]));
+console.log(levelOrder2([3, 9, 20, null, null, 15, 7]));
+console.log(levelOrder2([3, 9, 7, 4, null, 1, 2, null, null, null, null, null, null, null, 5]));
+
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[][]}
+ */
