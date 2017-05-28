@@ -1,0 +1,31 @@
+@import url(//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css);
+
+label {
+  cursor: pointer;
+}
+section {
+  margin: 10px;
+}
+
+input {
+  display: none;
+}
+
+.rating {
+  display: inline-block;
+  border: none;
+}
+
+.fa-star, .fa-star-o {
+  color: #f4a742;
+  font-size: 1.5em;
+}
+
+.star-container {
+  margin: 0 2px;
+}
+
+label:hover .fa-star,
+label:hover .fa-star-o {
+  color: #f2e56f;
+}
