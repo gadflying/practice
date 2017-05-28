@@ -81,3 +81,5 @@ const Vector2D3 = function Vector2D3(vec2d) {
 
   return { hasNext, next, reset };
 };
+
+Vector2D3([[2]]);
