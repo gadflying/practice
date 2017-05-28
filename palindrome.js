@@ -84,3 +84,16 @@ console.log(pal('noon'));
 console.log(pal('cat'));
 console.log(pal('racecar'));
 console.log(pal(''));
+
+/**
+* @param {char[]} Array of characters
+**/
+function isPal(chars) {
+  const len = chars.length;
+  for (let i = 0; i < len - i - 1; i += 1) {
+    if (chars[i] !== chars[len - i - 1]) {
+      return false;
+    }
+  }
+  return true;
+}
