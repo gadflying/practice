@@ -71,6 +71,7 @@ Return a NestedInteger object containing a nested list with 2 elements:
  * @param {string} s
  * @return {NestedInteger}
  */
+ /* eslint-disable no-undef */
 const deserialize = (s) => {
   const instructions = s.split('');
   const arrays = [];
