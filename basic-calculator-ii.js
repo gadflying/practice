@@ -112,17 +112,11 @@ const calculate = (s) => {
           const [operand1, operand2] = operands.splice(-2, 2);
           if (operator === '/') {
             operands.push(Math.trunc(operand1 / operand2));
-          }
-
-          if (operator === '*') {
+          } else if (operator === '*') {
             operands.push(operand1 * operand2);
-          }
-
-          if (operator === '+') {
+          } else if (operator === '+') {
             operands.push(operand1 + operand2);
-          }
-
-          if (operator === '-') {
+          } else if (operator === '-') {
             operands.push(operand1 - operand2);
           }
         }
@@ -140,17 +134,11 @@ const calculate = (s) => {
 
     if (operator === '/') {
       operands.push(Math.trunc(operand1 / operand2));
-    }
-
-    if (operator === '*') {
+    } else if (operator === '*') {
       operands.push(operand1 * operand2);
-    }
-
-    if (operator === '+') {
+    } else if (operator === '+') {
       operands.push(operand1 + operand2);
-    }
-
-    if (operator === '-') {
+    } else if (operator === '-') {
       operands.push(operand1 - operand2);
     }
   }
