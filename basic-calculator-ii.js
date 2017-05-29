@@ -137,11 +137,15 @@ const calculate = (s) => {
     }
 
     if (/[/*\-+]/.test(token)) {
+      // Flush buffer
       operands.push(parseInt(buffer, 10));
       buffer = '';
+
+      // Empty stack
       if (operators.length === 0) {
         operators.push(token);
       } else {
+        // Do higher precedence or same precedence operations first
         while (operators.length !== 0
           && (
             /[*/]/.test(operators[operators.length - 1])
@@ -157,9 +161,11 @@ const calculate = (s) => {
     }
   });
 
+  // Flush buffer
   operands.push(parseInt(buffer, 10));
   buffer = '';
 
+  // Finish up operands
   while (operators.length !== 0) {
     const operator = operators.pop();
     const [operand1, operand2] = operands.splice(-2, 2);
@@ -167,6 +173,7 @@ const calculate = (s) => {
   }
   return operands[0];
 };
+
 console.log(calculate('3+2*2'));
 console.log(calculate(' 3/2 '));
 console.log(calculate(' 3+5 / 2 '));
