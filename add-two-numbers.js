@@ -31,28 +31,23 @@ function ListNode(val) {
  * @return {ListNode}
  */
 const addTwoNumbers = (l1, l2) => {
-  let carry = 0;
+  const lSum = new ListNode(0);
 
+  let carry = 0;
   let p1 = l1;
   let p2 = l2;
-  let pSum;
-  let lSum;
+  let pSum = lSum;
 
   while (p1 !== null || p2 !== null) {
-    if (!lSum) {
-      pSum = new ListNode();
-      lSum = pSum;
-    } else {
-      pSum.next = new ListNode();
-      pSum = pSum.next;
-    }
     const value1 = p1 === null ? 0 : p1.val;
     const value2 = p2 === null ? 0 : p2.val;
     const sum = value1 + value2 + carry;
     const digit = sum % 10;
     carry = Math.floor(sum / 10);
 
-    pSum.val = digit;
+    pSum.next = new ListNode(digit);
+    pSum = pSum.next;
+
     p1 = p1 && p1.next;
     p2 = p2 && p2.next;
   }
@@ -61,7 +56,7 @@ const addTwoNumbers = (l1, l2) => {
     pSum.next = new ListNode(carry);
   }
 
-  return lSum;
+  return lSum.next;
 };
 
 const l1 = (() => {
