@@ -50,37 +50,7 @@ Note: Do not use the eval built-in library function.
  * @param {string} s
  * @return {number}
  */
-const calculate = (s) => {
-  const digits = {
-    0: true,
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-    6: true,
-    7: true,
-    8: true,
-    9: true,
-  };
-
-  const mdas = {
-    '+': true,
-    '-': true,
-    '/': true,
-    '*': true,
-  };
-
-  const md = {
-    '*': true,
-    '/': true,
-  };
-
-  const as = {
-    '+': true,
-    '-': true,
-  };
-
+const calculate2 = (s) => {
   const operands = [];
   const operators = [];
   let buffer = '';
@@ -88,13 +58,13 @@ const calculate = (s) => {
   const tokens = s.split('');
 
   tokens.forEach((token) => {
-    if (digits[token]) {
-    // if (/[0-9]/.test(token)) {
+    // if (digits[token]) {
+    if (/[0-9]/.test(token)) {
       buffer += token;
     }
 
-    // if (/[/*\-+]/.test(token)) {
-    if (mdas[token]) {
+    if (/[/*\-+]/.test(token)) {
+    // if (mdas[token]) {
       operands.push(parseInt(buffer, 10));
       buffer = '';
       if (operators.length === 0) {
@@ -102,10 +72,10 @@ const calculate = (s) => {
       } else {
         while (operators.length !== 0
           && (
-            // /[*/]/.test(operators[operators.length - 1])
-            md[operators[operators.length - 1]]
-            // || (/[+-]/.test(operators[operators.length - 1]) && /[+-]/.test(token))
-            || (as[operators[operators.length - 1]] && as[token])
+            /[*/]/.test(operators[operators.length - 1])
+            // md[operators[operators.length - 1]]
+            || (/[+-]/.test(operators[operators.length - 1]) && /[+-]/.test(token))
+            // || (as[operators[operators.length - 1]] && as[token])
           )
         ) {
           const operator = operators.pop();
@@ -145,6 +115,56 @@ const calculate = (s) => {
   return operands[0];
 };
 
+const calculate = (s) => {
+  const operations = {
+    '+': (o1, o2) => o1 + o2,
+    '-': (o1, o2) => o1 - o2,
+    '/': (o1, o2) => Math.trunc(o1 / o2),
+    '*': (o1, o2) => o1 * o2,
+  };
+
+  const operands = [];
+  const operators = [];
+  let buffer = '';
+
+  const tokens = s.split('');
+
+  tokens.forEach((token) => {
+    if (/[0-9]/.test(token)) {
+      buffer += token;
+    }
+
+    if (/[/*\-+]/.test(token)) {
+      operands.push(parseInt(buffer, 10));
+      buffer = '';
+      if (operators.length === 0) {
+        operators.push(token);
+      } else {
+        while (operators.length !== 0
+          && (
+            /[*/]/.test(operators[operators.length - 1])
+            || (/[+-]/.test(operators[operators.length - 1]) && /[+-]/.test(token))
+          )
+        ) {
+          const operator = operators.pop();
+          const [operand1, operand2] = operands.splice(-2, 2);
+          operands.push(operations[operator](operand1, operand2));
+        }
+        operators.push(token);
+      }
+    }
+  });
+
+  operands.push(parseInt(buffer, 10));
+  buffer = '';
+
+  while (operators.length !== 0) {
+    const operator = operators.pop();
+    const [operand1, operand2] = operands.splice(-2, 2);
+    operands.push(operations[operator](operand1, operand2));
+  }
+  return operands.pop();
+};
 console.log(calculate('3+2*2'));
 console.log(calculate(' 3/2 '));
 console.log(calculate(' 3+5 / 2 '));
