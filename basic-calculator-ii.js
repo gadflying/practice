@@ -115,6 +115,8 @@ const calculate2 = (s) => {
   return operands[0];
 };
 
+calculate2('1+1');
+
 const calculate = (s) => {
   const operations = {
     '+': (o1, o2) => o1 + o2,
@@ -163,7 +165,7 @@ const calculate = (s) => {
     const [operand1, operand2] = operands.splice(-2, 2);
     operands.push(operations[operator](operand1, operand2));
   }
-  return operands.pop();
+  return operands[0];
 };
 console.log(calculate('3+2*2'));
 console.log(calculate(' 3/2 '));
