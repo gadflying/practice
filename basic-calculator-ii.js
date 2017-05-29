@@ -51,6 +51,36 @@ Note: Do not use the eval built-in library function.
  * @return {number}
  */
 const calculate = (s) => {
+  const digits = {
+    0: true,
+    1: true,
+    2: true,
+    3: true,
+    4: true,
+    5: true,
+    6: true,
+    7: true,
+    8: true,
+    9: true,
+  };
+
+  const mdas = {
+    '+': true,
+    '-': true,
+    '/': true,
+    '*': true,
+  };
+
+  const md = {
+    '*': true,
+    '/': true,
+  };
+
+  const as = {
+    '+': true,
+    '-': true,
+  };
+
   const operands = [];
   const operators = [];
   let buffer = '';
@@ -58,12 +88,13 @@ const calculate = (s) => {
   const tokens = s.split('');
 
   tokens.forEach((token) => {
-    // console.log('token', token);
-    if (/[0-9]/.test(token)) {
+    if (digits[token]) {
+    // if (/[0-9]/.test(token)) {
       buffer += token;
     }
 
-    if (/[/*\-+]/.test(token)) {
+    // if (/[/*\-+]/.test(token)) {
+    if (mdas[token]) {
       operands.push(parseInt(buffer, 10));
       buffer = '';
       if (operators.length === 0) {
@@ -71,11 +102,12 @@ const calculate = (s) => {
       } else {
         while (operators.length !== 0
           && (
-            /[*/]/.test(operators[operators.length - 1])
-            || (/[+-]/.test(operators[operators.length - 1]) && /[+-]/.test(token))
+            // /[*/]/.test(operators[operators.length - 1])
+            md[operators[operators.length - 1]]
+            // || (/[+-]/.test(operators[operators.length - 1]) && /[+-]/.test(token))
+            || (as[operators[operators.length - 1]] && as[token])
           )
         ) {
-          // console.log('operators', operators);
           const operator = operators.pop();
           const [operand1, operand2] = operands.splice(-2, 2);
           if (operator === '/') {
@@ -97,9 +129,8 @@ const calculate = (s) => {
         operators.push(token);
       }
     }
-
-    // console.log(operands, operators);
   });
+
   operands.push(parseInt(buffer, 10));
   buffer = '';
 
@@ -123,9 +154,9 @@ const calculate = (s) => {
       operands.push(operand1 - operand2);
     }
   }
-  // console.log(operands, operators);
   return operands[0];
 };
+
 console.log(calculate('3+2*2'));
 console.log(calculate(' 3/2 '));
 console.log(calculate(' 3+5 / 2 '));
