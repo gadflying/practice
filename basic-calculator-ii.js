@@ -22,17 +22,20 @@ Note: Do not use the eval built-in library function.
  */
 
  // This solution does not work
+ /* eslint-disable no-restricted-properties */
 const calculate = (s) => {
   const add = [];
-  const multiply = [];
-  const subtract = [];
-  const divide = [];
+  let multiply = [];
+
+  let unary = 1;
+  let exponent = 1;
+  let operator = '+';
 
   let buffer = '';
 
   const commands = s.split('');
 
-  commands.forEach((command) => {
+  commands.concat('=').forEach((command) => {
     switch (command) {
       case '0':
       case '1':
@@ -48,40 +51,97 @@ const calculate = (s) => {
         break;
 
       case '+':
-        add.push(parseInt(buffer, 10));
+        add.push(
+          multiply
+            .concat(unary * Math.pow(parseInt(buffer, 10), exponent))
+            .reduce((memo, num) => Math.trunc(memo * num), 1)
+        );
         buffer = '';
+        operator = '+';
+        multiply = [];
+        unary = 1;
         break;
 
       case '-':
-        subtract.push(parseInt(buffer, 10));
+        add.push(
+          multiply
+            .concat(unary * Math.pow(parseInt(buffer, 10), exponent))
+            .reduce((memo, num) => Math.trunc(memo * num), 1)
+        );
         buffer = '';
+        operator = '-';
+        multiply = [];
+        unary = -1;
         break;
 
       case '*':
-        multiply.push(parseInt(buffer, 10));
+        multiply = [
+          multiply
+            .concat(unary * Math.pow(parseInt(buffer, 10), exponent))
+            .reduce((memo, num) => Math.trunc(memo * num), 1)
+        ];
         buffer = '';
+        operator = '*';
+        unary = 1;
+        exponent = 1;
         break;
 
       case '/':
-        divide.push(parseInt(buffer, 10));
+        multiply = [
+          multiply
+            .concat(unary * Math.pow(parseInt(buffer, 10), exponent))
+            .reduce((memo, num) => Math.trunc(memo * num), 1)
+        ];
+        exponent = -1;
+        buffer = '';
+        operator = '/';
+        break;
+
+      case '=': {
+        const integer = parseInt(buffer, 10);
+        if (operator === '*') {
+          multiply.push(integer);
+          add.push(multiply.reduce((memo, num) => memo * num, 1));
+        }
+
+        if (operator === '/') {
+          multiply.push(1 / integer);
+          add.push(multiply.reduce((memo, num) => Math.trunc(memo * num), 1));
+          exponent = 1;
+        }
+
+        if (operator === '+') {
+          add.push(integer);
+        }
+
+        if (operator === '-') {
+          add.push(-1 * integer);
+          unary = 1;
+        }
+
         buffer = '';
         break;
+      }
 
       default:
     }
   });
 
-  let integer = parseInt(buffer, 10);
+  const result = add.reduce((memo, num) => memo + num, 0);
 
-  integer = multiply.length ? multiply.shift() * integer : integer;
-  integer = divide.length ? divide.shift() / integer : integer;
-  integer = subtract.length ? subtract.shift() - integer : integer;
-  integer = add.length ? add.shift() + integer : integer;
-
-  return Math.trunc(integer);
+  return Math.trunc(result);
 };
 
 console.log(calculate('3+2*2'));
 console.log(calculate(' 3/2 '));
 console.log(calculate(' 3+5 / 2 '));
 console.log(calculate('1+1+1'));
+console.log(calculate('3-2*2'));
+console.log(calculate('3*2+2'));
+console.log(calculate('3/2-2'));
+console.log(calculate('1-1+1'));
+console.log(calculate('1-1-1'));
+console.log(calculate('1-1*2'));
+console.log(calculate('14/3*2'));
+console.log(calculate('14-3/2'));
+console.log(calculate('1*2-3/4+5*6-7*8+9/10'));
