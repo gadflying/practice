@@ -23,115 +23,109 @@ Note: Do not use the eval built-in library function.
 
  // This solution does not work
  /* eslint-disable no-restricted-properties */
+
+/**
+1. While there are still tokens to be read in,
+   1.1 Get the next token.
+   1.2 If the token is:
+       1.2.1 A number: push it onto the value stack.
+       1.2.5 An operator (call it thisOp):
+         1 While the operator stack is not empty, and the top thing on the
+           operator stack has the same or greater precedence as thisOp,
+           1 Pop the operator from the operator stack.
+           2 Pop the value stack twice, getting two operands.
+           3 Apply the operator to the operands, in the correct order.
+           4 Push the result onto the value stack.
+         2 Push thisOp onto the operator stack.
+2. While the operator stack is not empty,
+    1 Pop the operator from the operator stack.
+    2 Pop the value stack twice, getting two operands.
+    3 Apply the operator to the operands, in the correct order.
+    4 Push the result onto the value stack.
+3. At this point the operator stack should be empty, and the value
+   stack should have only one value in it, which is the final result.
+**/
+
+/**
+ * @param {string} s
+ * @return {number}
+ */
 const calculate = (s) => {
-  const add = [];
-  let multiply = [];
-
-  let unary = 1;
-  let exponent = 1;
-  let operator = '+';
-
+  const operands = [];
+  const operators = [];
   let buffer = '';
 
-  const commands = s.split('');
+  const tokens = s.split('');
 
-  commands.concat('=').forEach((command) => {
-    switch (command) {
-      case '0':
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9':
-        buffer += command;
-        break;
-
-      case '+':
-        add.push(
-          multiply
-            .concat(unary * Math.pow(parseInt(buffer, 10), exponent))
-            .reduce((memo, num) => Math.trunc(memo * num), 1)
-        );
-        buffer = '';
-        operator = '+';
-        multiply = [];
-        unary = 1;
-        break;
-
-      case '-':
-        add.push(
-          multiply
-            .concat(unary * Math.pow(parseInt(buffer, 10), exponent))
-            .reduce((memo, num) => Math.trunc(memo * num), 1)
-        );
-        buffer = '';
-        operator = '-';
-        multiply = [];
-        unary = -1;
-        break;
-
-      case '*':
-        multiply = [
-          multiply
-            .concat(unary * Math.pow(parseInt(buffer, 10), exponent))
-            .reduce((memo, num) => Math.trunc(memo * num), 1)
-        ];
-        buffer = '';
-        operator = '*';
-        unary = 1;
-        exponent = 1;
-        break;
-
-      case '/':
-        multiply = [
-          multiply
-            .concat(unary * Math.pow(parseInt(buffer, 10), exponent))
-            .reduce((memo, num) => Math.trunc(memo * num), 1)
-        ];
-        exponent = -1;
-        buffer = '';
-        operator = '/';
-        break;
-
-      case '=': {
-        const integer = parseInt(buffer, 10);
-        if (operator === '*') {
-          multiply.push(integer);
-          add.push(multiply.reduce((memo, num) => memo * num, 1));
-        }
-
-        if (operator === '/') {
-          multiply.push(1 / integer);
-          add.push(multiply.reduce((memo, num) => Math.trunc(memo * num), 1));
-          exponent = 1;
-        }
-
-        if (operator === '+') {
-          add.push(integer);
-        }
-
-        if (operator === '-') {
-          add.push(-1 * integer);
-          unary = 1;
-        }
-
-        buffer = '';
-        break;
-      }
-
-      default:
+  tokens.forEach((token) => {
+    // console.log('token', token);
+    if (/[0-9]/.test(token)) {
+      buffer += token;
     }
+
+    if (/[/*\-+]/.test(token)) {
+      operands.push(parseInt(buffer, 10));
+      buffer = '';
+      if (operators.length === 0) {
+        operators.push(token);
+      } else {
+        while (operators.length !== 0
+          && (
+            /[*/]/.test(operators[operators.length - 1])
+            || (/[+-]/.test(operators[operators.length - 1]) && /[+-]/.test(token))
+          )
+        ) {
+          // console.log('operators', operators);
+          const operator = operators.pop();
+          const [operand1, operand2] = operands.splice(-2, 2);
+          if (operator === '/') {
+            operands.push(Math.trunc(operand1 / operand2));
+          }
+
+          if (operator === '*') {
+            operands.push(operand1 * operand2);
+          }
+
+          if (operator === '+') {
+            operands.push(operand1 + operand2);
+          }
+
+          if (operator === '-') {
+            operands.push(operand1 - operand2);
+          }
+        }
+        operators.push(token);
+      }
+    }
+
+    // console.log(operands, operators);
   });
+  operands.push(parseInt(buffer, 10));
+  buffer = '';
 
-  const result = add.reduce((memo, num) => memo + num, 0);
+  while (operators.length !== 0) {
+    const operator = operators.pop();
+    const [operand1, operand2] = operands.splice(-2, 2);
 
-  return Math.trunc(result);
+    if (operator === '/') {
+      operands.push(Math.trunc(operand1 / operand2));
+    }
+
+    if (operator === '*') {
+      operands.push(operand1 * operand2);
+    }
+
+    if (operator === '+') {
+      operands.push(operand1 + operand2);
+    }
+
+    if (operator === '-') {
+      operands.push(operand1 - operand2);
+    }
+  }
+  // console.log(operands, operators);
+  return operands[0];
 };
-
 console.log(calculate('3+2*2'));
 console.log(calculate(' 3/2 '));
 console.log(calculate(' 3+5 / 2 '));
