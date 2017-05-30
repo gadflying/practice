@@ -21,6 +21,96 @@ The palindromes are ["dcbaabcd", "abcddcba", "slls", "llssssll"]
  * @param {string[]} words
  * @return {number[][]}
  */
+
+/* eslint-disable no-param-reassign */
+const palindromePairs = (words) => {
+  const TrieNode = (c, index = null) => ({ val: c, children: {}, index });
+
+  const allPals = (trieNode, stem, stems) => {
+    if (trieNode.val === '#') {
+      stems.push({ word: stem, index: trieNode.index });
+    } else {
+      stem += trieNode.val || '';
+    }
+
+    Object.keys(trieNode.children).forEach((c) => {
+      const nextTrie = trieNode.children[c];
+      allPals(nextTrie, stem, stems);
+    });
+  };
+
+  const trie = words.reduce((root, word, index) => {
+    let p = root;
+    word.split('').reverse().forEach((c) => {
+      if (!p.children[c]) {
+        p.children[c] = TrieNode(c);
+      }
+      p = p.children[c];
+    });
+    p.children['#'] = TrieNode('#', index);
+    return root;
+  }, TrieNode(null));
+
+  const pairs = [];
+
+  console.log('trie', JSON.stringify(trie, null, 2));
+  words.forEach((word, index) => {
+    console.log('word', word);
+    let p = trie;
+    word.split('').some((c) => {
+      if (p.children[c]) {
+        p = p.children[c];
+        return false;
+      }
+      p = trie;
+      return true;
+    });
+
+    if (p.val !== null) {
+      Object.keys(p.children).forEach((c) => {
+        if (c === '#') {
+          const terminal = p.children['#'];
+          if (index !== terminal.index) {
+            pairs.push([index, terminal.index]);
+          }
+        } else {
+          const child = p.children[c];
+          const stems = [];
+          allPals(child, '', stems);
+          stems.forEach((stem) => {
+            const realStem = stem.word.slice();
+            if (index !== stem.index && realStem.split('').reverse().join('') === realStem) {
+              pairs.push([index, stem.index]);
+            }
+          });
+          console.log(stems);
+        }
+      });
+    }
+  });
+
+  if (trie.children['#'] !== undefined) {
+    const terminal = trie.children['#'];
+    const stems = [];
+    allPals(trie, '', stems);
+    stems.forEach((stem) => {
+      const realStem = stem.word.slice();
+      if (terminal.index !== stem.index && realStem.split('').reverse().join('') === realStem) {
+        pairs.push([terminal.index, stem.index]);
+        pairs.push([stem.index, terminal.index]);
+      }
+    });
+  }
+
+  return pairs;
+};
+
+console.log(palindromePairs(['a', 'b', 'c', 'ab', 'ac', 'aa']));
+// console.log(palindromePairs(['bat', 'tab', 'cat']));
+// console.log(palindromePairs(['abcd', 'dcba', 'lls', 's', 'sssll']));
+// console.log(palindromePairs(['a', 'abc', 'aba', '']));
+// console.log(palindromePairs(['efjhhdeiajcaidfd', 'cf', 'agggg', 'hjcijibihjjcfbb', 'cgbdabdfhagabde', 'agijdh', 'ddcghfebfgf', 'ggdjeedegdhcfgif', 'hjbecjdiba', 'gaichfabfdicifgig', 'ejhigebcha', 'jjfjhieebhgihji', 'eibieefiabah', 'cdjjiicaabedg', 'gabdafaagfbeecedcgf', 'jbcjgbgg', 'ccfdbabdhchgaagecgi', 'hefichdahdaceice', 'ghahgcjbgajhgcc', 'ehfg', 'hgdehhfgfjbgjgia', 'hecghg', 'ghbhhhbebidah', 'gaaefcehbjfibehje', 'iegffjiifabgd', 'ciaaibdhjhjigbgi', 'jahgffbcaigdjij', 'cijhfaigbjfbgfh', 'iehfjdeagfhbajdgjb', 'iaehbajgagaagd', 'ddeibjghb', 'deadjeidffjijcafg', 'bchfhgcfe', 'ahg', 'jjafge', 'eecfgfdh', 'aaccfjc', 'gii', 'fibijfggeea', 'ifddeabihe', 'hhhdddjichaca', 'bhfiddbfciab', 'gfafhagfbbbjch', 'bjdahhgiidcchjecigci', 'deifiah', 'dbedjgajhf', 'eijcba', 'dgijabdaacijiae', 'headhgcdcjigdjab', 'iej', 'aggbibjhcdjfagbdb', 'jcgadciacga', 'ajgbbcegghjbicjiacge', 'c', 'agahdedc', 'giidbdbefh', 'dcjaccbch', 'icaa', 'ehcibghiicgfhgadchg', 'bebccffjejjfiif', 'd', 'heccdagabab', 'cb', 'cijffd', 'ga', 'aaaifabdiaeibjde', 'cc', 'faibifaaacecgij', 'aeeed', 'decihfdh', 'fgi', 'dg', 'iaiffgajjfe', 'digfjhjh', 'eejffbbegcaicg', 'ejecdbddhhidjfcejd', 'ibeiff', 'f', 'gdbgeibjjihahfbibij', 'ighbcidgfjggbgic', 'hefjeiah', 'cbbeccjdcjc', 'ecfdbf', 'fjfghec', 'bafceaffacfha', 'cgehdcdf', 'aiifjfdbahaj', 'hf', 'dfhchdfagffb', 'gbja', 'bgeieh', 'ceebich', 'jchiieiegbhgcjf', 'gbgijahbjhjddgb', 'ahfgefiecjbcf', 'cdjjgggbhhifieh', 'af', 'iggbjcibfeda', 'hhgijej', 'fabcijjaijdejji', 'b', 'jbcgbaijja', 'aahjf', 'ihgbcajgaah', 'abdgeijbfjadcacfajci', 'fbgiajj', 'fhfbiie', 'aaiadhjgfagdb', 'cgag', 'ijehbbhdjajg', 'iedaf', 'iaafdcfighd', 'becdaedddeh', 'aadhaabhibfjd', 'fcfgibjc', 'iheacchajcjecjjfc', 'gbdbcgfeh', 'acgddfaaegbeegijghg', 'bghb', 'ggdbihccdgb', 'gfgc', 'cdhgjbdgbb', 'abhichehehahfhbachdd', 'dfhbhabebdgafaj', 'adbcegidbaadfdhiiha', 'jhfaeedihchga', 'jgbfecgegbeicidjadeh', 'giie', 'dccfajfiigc', 'adai', 'defbfiijbfhbfdageibe', 'cjgfbbjd', 'idhbhiegbhgjadfge', 'gjd', 'jdecfbhjjfi', 'ijdcbgfhiacbbjchc', 'gahabjhejfijhhde', 'hcfajbbedibb', 'bajegbbgfh', 'dgeficccjhjiajhffe', 'bh', 'cfghg', 'hjfcfdihbhdjiec', 'dhecjahhbghfegdijgh', 'iececighacfad', 'bijafbacjg', 'fchifaehdichfbae', 'fidaeefbbg', 'fdhafiegdigac', 'agjaadjh', 'hbidjifhffcaafjadf', 'adgibabebdgiedg', 'jaabdbfgecbbiafdih', 'j', 'ejjfcgjbhed', 'gdhhagbiiijagbjegd', 'je', 'jecjedhagigfccf', 'ida', 'hcaefg', 'hghfhjhgfcjf', 'cegdbcechhbgebjjfdc', 'hiciacgibfehafai', 'agiegjgdejda', 'bjehijidaca', 'fja', 'jabeijfdedad', 'hfdhjhhfgbfaih', 'gbehbhdjbfajhfgacg', 'gehdigdihiafiehfhe', 'caefha', 'efiifjegafb', 'hdbhjbdjigbcg', 'id', 'hebchc', 'abdiadihhcjeh', 'hejffbfdig', 'cciaaijicfgegjac', 'ihgehg', 'hhehhgcg', 'gggifbfgfaibige', 'hahfbejidagce', 'hgc', 'dgajaddfcbdcgfeh', 'hadaacfbi', 'jbddbiafghfjf', 'heeggjgedfbdb', 'fgcfc', 'dgbjjj', 'dddefieifcecifaid', 'jicfhhi', 'fbjeiacfjihgehdf', 'geahfddgejgdbdbgg', 'cifjcfjhcajhdiccffbe', 'gaiej', 'ggji', 'ahjebaiadi', 'gbggadbfhfbihfehd', 'ddbgh', 'ihicec', 'adgiiijhejadgcahb', 'ih', 'jfegajhfiiegcghcegdg', 'cahfce', 'bhfefifidbcbdgchd', 'dbehcij', 'hfaicggd', 'jccjge', 'fijcbehgihfgd', 'ejfjdddhaaefdgefea', 'iihahdffiee', 'fbgebehede', 'g', 'aegeefgef', 'jfdbdjb', 'ehfgihbdb', 'bdhjg', 'djbbcdfdcbdb', 'cdiaiebgicfga', 'ghhgidjejbcca', 'beee', 'hbggjggcdfbdbf', 'dcggfjb', 'dce', 'chaajfbbcedcj', 'fhfcicjdajfbjdcjj', 'bddcegcgjecfhfdb', 'gjadf', 'bgcfihg', 'fecifgahfde', 'cidiebibcbgdeddbfh', 'eeede', 'ijbibbgjjcifhdiie', 'jieeigdfdbegh', 'cdieegecbfcceiieh', 'i', 'eaaiiag', 'faeegabjehhcfifgbhfb', 'eejghb', 'cbcchdfhjgdc', 'efahgddgcjiibbe', 'cfbhiebiehibfbgbgaa', 'bjiiiffbfeffjihfhfci', 'agijajhha', 'hbfaiegjdebie', 'ggbcebiifcdi', 'cbfjfccbjabaec', 'fegfbajhia', 'fjiaaibahcdfgjc', 'jg', 'iifcfcghfebhigc', 'dfadcdji', 'dbfgjfif', 'jccfdiabg', 'fieeedebgiifahi', 'cddghbejcj', 'jaeijieiabgdjdibh', 'ggfch', 'jdfehjjeifbfga', 'gjbicdcdecjegaie', 'ijafiihcahaedgdibh', 'cceecic', 'hjaeadehjedc', 'jjhecccfgbbjdfbbhggf', 'degichja', 'ejijgefegddg', 'behcidghfcdhjibjdif', 'hha', 'bggedecejeccacjc', 'cedagiffcdhijcd', 'dagbbdfgc', 'jdiaice', 'ghci', 'hdjfiggiiddbe', 'bfdbcbbacfedce', 'dgjijehadacei', 'ddfdidiedb', 'aifjfbd', 'jacfhde', 'haafcaadjeadicfcbh']));
+
 const palindromePairs2 = function palindromePairs(words) {
   const isPalindrome = chars => chars === chars.split('').reverse().join('');
   const pairs = [];
@@ -62,6 +152,7 @@ const palindromePairs2 = function palindromePairs(words) {
 // console.log(palindromePairs(['a', 'abc', 'aba', '']));
 // console.log(palindromePairs(['efjhhdeiajcaidfd', 'cf', 'agggg', 'hjcijibihjjcfbb', 'cgbdabdfhagabde', 'agijdh', 'ddcghfebfgf', 'ggdjeedegdhcfgif', 'hjbecjdiba', 'gaichfabfdicifgig', 'ejhigebcha', 'jjfjhieebhgihji', 'eibieefiabah', 'cdjjiicaabedg', 'gabdafaagfbeecedcgf', 'jbcjgbgg', 'ccfdbabdhchgaagecgi', 'hefichdahdaceice', 'ghahgcjbgajhgcc', 'ehfg', 'hgdehhfgfjbgjgia', 'hecghg', 'ghbhhhbebidah', 'gaaefcehbjfibehje', 'iegffjiifabgd', 'ciaaibdhjhjigbgi', 'jahgffbcaigdjij', 'cijhfaigbjfbgfh', 'iehfjdeagfhbajdgjb', 'iaehbajgagaagd', 'ddeibjghb', 'deadjeidffjijcafg', 'bchfhgcfe', 'ahg', 'jjafge', 'eecfgfdh', 'aaccfjc', 'gii', 'fibijfggeea', 'ifddeabihe', 'hhhdddjichaca', 'bhfiddbfciab', 'gfafhagfbbbjch', 'bjdahhgiidcchjecigci', 'deifiah', 'dbedjgajhf', 'eijcba', 'dgijabdaacijiae', 'headhgcdcjigdjab', 'iej', 'aggbibjhcdjfagbdb', 'jcgadciacga', 'ajgbbcegghjbicjiacge', 'c', 'agahdedc', 'giidbdbefh', 'dcjaccbch', 'icaa', 'ehcibghiicgfhgadchg', 'bebccffjejjfiif', 'd', 'heccdagabab', 'cb', 'cijffd', 'ga', 'aaaifabdiaeibjde', 'cc', 'faibifaaacecgij', 'aeeed', 'decihfdh', 'fgi', 'dg', 'iaiffgajjfe', 'digfjhjh', 'eejffbbegcaicg', 'ejecdbddhhidjfcejd', 'ibeiff', 'f', 'gdbgeibjjihahfbibij', 'ighbcidgfjggbgic', 'hefjeiah', 'cbbeccjdcjc', 'ecfdbf', 'fjfghec', 'bafceaffacfha', 'cgehdcdf', 'aiifjfdbahaj', 'hf', 'dfhchdfagffb', 'gbja', 'bgeieh', 'ceebich', 'jchiieiegbhgcjf', 'gbgijahbjhjddgb', 'ahfgefiecjbcf', 'cdjjgggbhhifieh', 'af', 'iggbjcibfeda', 'hhgijej', 'fabcijjaijdejji', 'b', 'jbcgbaijja', 'aahjf', 'ihgbcajgaah', 'abdgeijbfjadcacfajci', 'fbgiajj', 'fhfbiie', 'aaiadhjgfagdb', 'cgag', 'ijehbbhdjajg', 'iedaf', 'iaafdcfighd', 'becdaedddeh', 'aadhaabhibfjd', 'fcfgibjc', 'iheacchajcjecjjfc', 'gbdbcgfeh', 'acgddfaaegbeegijghg', 'bghb', 'ggdbihccdgb', 'gfgc', 'cdhgjbdgbb', 'abhichehehahfhbachdd', 'dfhbhabebdgafaj', 'adbcegidbaadfdhiiha', 'jhfaeedihchga', 'jgbfecgegbeicidjadeh', 'giie', 'dccfajfiigc', 'adai', 'defbfiijbfhbfdageibe', 'cjgfbbjd', 'idhbhiegbhgjadfge', 'gjd', 'jdecfbhjjfi', 'ijdcbgfhiacbbjchc', 'gahabjhejfijhhde', 'hcfajbbedibb', 'bajegbbgfh', 'dgeficccjhjiajhffe', 'bh', 'cfghg', 'hjfcfdihbhdjiec', 'dhecjahhbghfegdijgh', 'iececighacfad', 'bijafbacjg', 'fchifaehdichfbae', 'fidaeefbbg', 'fdhafiegdigac', 'agjaadjh', 'hbidjifhffcaafjadf', 'adgibabebdgiedg', 'jaabdbfgecbbiafdih', 'j', 'ejjfcgjbhed', 'gdhhagbiiijagbjegd', 'je', 'jecjedhagigfccf', 'ida', 'hcaefg', 'hghfhjhgfcjf', 'cegdbcechhbgebjjfdc', 'hiciacgibfehafai', 'agiegjgdejda', 'bjehijidaca', 'fja', 'jabeijfdedad', 'hfdhjhhfgbfaih', 'gbehbhdjbfajhfgacg', 'gehdigdihiafiehfhe', 'caefha', 'efiifjegafb', 'hdbhjbdjigbcg', 'id', 'hebchc', 'abdiadihhcjeh', 'hejffbfdig', 'cciaaijicfgegjac', 'ihgehg', 'hhehhgcg', 'gggifbfgfaibige', 'hahfbejidagce', 'hgc', 'dgajaddfcbdcgfeh', 'hadaacfbi', 'jbddbiafghfjf', 'heeggjgedfbdb', 'fgcfc', 'dgbjjj', 'dddefieifcecifaid', 'jicfhhi', 'fbjeiacfjihgehdf', 'geahfddgejgdbdbgg', 'cifjcfjhcajhdiccffbe', 'gaiej', 'ggji', 'ahjebaiadi', 'gbggadbfhfbihfehd', 'ddbgh', 'ihicec', 'adgiiijhejadgcahb', 'ih', 'jfegajhfiiegcghcegdg', 'cahfce', 'bhfefifidbcbdgchd', 'dbehcij', 'hfaicggd', 'jccjge', 'fijcbehgihfgd', 'ejfjdddhaaefdgefea', 'iihahdffiee', 'fbgebehede', 'g', 'aegeefgef', 'jfdbdjb', 'ehfgihbdb', 'bdhjg', 'djbbcdfdcbdb', 'cdiaiebgicfga', 'ghhgidjejbcca', 'beee', 'hbggjggcdfbdbf', 'dcggfjb', 'dce', 'chaajfbbcedcj', 'fhfcicjdajfbjdcjj', 'bddcegcgjecfhfdb', 'gjadf', 'bgcfihg', 'fecifgahfde', 'cidiebibcbgdeddbfh', 'eeede', 'ijbibbgjjcifhdiie', 'jieeigdfdbegh', 'cdieegecbfcceiieh', 'i', 'eaaiiag', 'faeegabjehhcfifgbhfb', 'eejghb', 'cbcchdfhjgdc', 'efahgddgcjiibbe', 'cfbhiebiehibfbgbgaa', 'bjiiiffbfeffjihfhfci', 'agijajhha', 'hbfaiegjdebie', 'ggbcebiifcdi', 'cbfjfccbjabaec', 'fegfbajhia', 'fjiaaibahcdfgjc', 'jg', 'iifcfcghfebhigc', 'dfadcdji', 'dbfgjfif', 'jccfdiabg', 'fieeedebgiifahi', 'cddghbejcj', 'jaeijieiabgdjdibh', 'ggfch', 'jdfehjjeifbfga', 'gjbicdcdecjegaie', 'ijafiihcahaedgdibh', 'cceecic', 'hjaeadehjedc', 'jjhecccfgbbjdfbbhggf', 'degichja', 'ejijgefegddg', 'behcidghfcdhjibjdif', 'hha', 'bggedecejeccacjc', 'cedagiffcdhijcd', 'dagbbdfgc', 'jdiaice', 'ghci', 'hdjfiggiiddbe', 'bfdbcbbacfedce', 'dgjijehadacei', 'ddfdidiedb', 'aifjfbd', 'jacfhde', 'haafcaadjeadicfcbh']));
 
+
 // N2 squared version
 const palindromePairsN2 = function palindromePairsN2(words) {
   const isPalindrome = chars => chars === chars.split('').reverse().join('');
@@ -86,7 +177,7 @@ const palindromePairsN2 = function palindromePairsN2(words) {
 };
 
 /* eslint-disable no-param-reassign */
-const palindromePairs = function palindromePairs(words) {
+const palindromePairs5 = function palindromePairs(words) {
   if (!words || words.length === 0) {
     return [];
   }
@@ -115,10 +206,10 @@ const palindromePairs = function palindromePairs(words) {
   return pairs;
 };
 
-console.log(palindromePairsN2(['bat', 'tab', 'cat']));
-console.log(palindromePairsN2(['abcd', 'dcba', 'lls', 's', 'sssll']));
-console.log(palindromePairsN2(['a', 'abc', 'aba', '']));
-console.log(palindromePairsN2(['efjhhdeiajcaidfd', 'cf', 'agggg', 'hjcijibihjjcfbb', 'cgbdabdfhagabde', 'agijdh', 'ddcghfebfgf', 'ggdjeedegdhcfgif', 'hjbecjdiba', 'gaichfabfdicifgig', 'ejhigebcha', 'jjfjhieebhgihji', 'eibieefiabah', 'cdjjiicaabedg', 'gabdafaagfbeecedcgf', 'jbcjgbgg', 'ccfdbabdhchgaagecgi', 'hefichdahdaceice', 'ghahgcjbgajhgcc', 'ehfg', 'hgdehhfgfjbgjgia', 'hecghg', 'ghbhhhbebidah', 'gaaefcehbjfibehje', 'iegffjiifabgd', 'ciaaibdhjhjigbgi', 'jahgffbcaigdjij', 'cijhfaigbjfbgfh', 'iehfjdeagfhbajdgjb', 'iaehbajgagaagd', 'ddeibjghb', 'deadjeidffjijcafg', 'bchfhgcfe', 'ahg', 'jjafge', 'eecfgfdh', 'aaccfjc', 'gii', 'fibijfggeea', 'ifddeabihe', 'hhhdddjichaca', 'bhfiddbfciab', 'gfafhagfbbbjch', 'bjdahhgiidcchjecigci', 'deifiah', 'dbedjgajhf', 'eijcba', 'dgijabdaacijiae', 'headhgcdcjigdjab', 'iej', 'aggbibjhcdjfagbdb', 'jcgadciacga', 'ajgbbcegghjbicjiacge', 'c', 'agahdedc', 'giidbdbefh', 'dcjaccbch', 'icaa', 'ehcibghiicgfhgadchg', 'bebccffjejjfiif', 'd', 'heccdagabab', 'cb', 'cijffd', 'ga', 'aaaifabdiaeibjde', 'cc', 'faibifaaacecgij', 'aeeed', 'decihfdh', 'fgi', 'dg', 'iaiffgajjfe', 'digfjhjh', 'eejffbbegcaicg', 'ejecdbddhhidjfcejd', 'ibeiff', 'f', 'gdbgeibjjihahfbibij', 'ighbcidgfjggbgic', 'hefjeiah', 'cbbeccjdcjc', 'ecfdbf', 'fjfghec', 'bafceaffacfha', 'cgehdcdf', 'aiifjfdbahaj', 'hf', 'dfhchdfagffb', 'gbja', 'bgeieh', 'ceebich', 'jchiieiegbhgcjf', 'gbgijahbjhjddgb', 'ahfgefiecjbcf', 'cdjjgggbhhifieh', 'af', 'iggbjcibfeda', 'hhgijej', 'fabcijjaijdejji', 'b', 'jbcgbaijja', 'aahjf', 'ihgbcajgaah', 'abdgeijbfjadcacfajci', 'fbgiajj', 'fhfbiie', 'aaiadhjgfagdb', 'cgag', 'ijehbbhdjajg', 'iedaf', 'iaafdcfighd', 'becdaedddeh', 'aadhaabhibfjd', 'fcfgibjc', 'iheacchajcjecjjfc', 'gbdbcgfeh', 'acgddfaaegbeegijghg', 'bghb', 'ggdbihccdgb', 'gfgc', 'cdhgjbdgbb', 'abhichehehahfhbachdd', 'dfhbhabebdgafaj', 'adbcegidbaadfdhiiha', 'jhfaeedihchga', 'jgbfecgegbeicidjadeh', 'giie', 'dccfajfiigc', 'adai', 'defbfiijbfhbfdageibe', 'cjgfbbjd', 'idhbhiegbhgjadfge', 'gjd', 'jdecfbhjjfi', 'ijdcbgfhiacbbjchc', 'gahabjhejfijhhde', 'hcfajbbedibb', 'bajegbbgfh', 'dgeficccjhjiajhffe', 'bh', 'cfghg', 'hjfcfdihbhdjiec', 'dhecjahhbghfegdijgh', 'iececighacfad', 'bijafbacjg', 'fchifaehdichfbae', 'fidaeefbbg', 'fdhafiegdigac', 'agjaadjh', 'hbidjifhffcaafjadf', 'adgibabebdgiedg', 'jaabdbfgecbbiafdih', 'j', 'ejjfcgjbhed', 'gdhhagbiiijagbjegd', 'je', 'jecjedhagigfccf', 'ida', 'hcaefg', 'hghfhjhgfcjf', 'cegdbcechhbgebjjfdc', 'hiciacgibfehafai', 'agiegjgdejda', 'bjehijidaca', 'fja', 'jabeijfdedad', 'hfdhjhhfgbfaih', 'gbehbhdjbfajhfgacg', 'gehdigdihiafiehfhe', 'caefha', 'efiifjegafb', 'hdbhjbdjigbcg', 'id', 'hebchc', 'abdiadihhcjeh', 'hejffbfdig', 'cciaaijicfgegjac', 'ihgehg', 'hhehhgcg', 'gggifbfgfaibige', 'hahfbejidagce', 'hgc', 'dgajaddfcbdcgfeh', 'hadaacfbi', 'jbddbiafghfjf', 'heeggjgedfbdb', 'fgcfc', 'dgbjjj', 'dddefieifcecifaid', 'jicfhhi', 'fbjeiacfjihgehdf', 'geahfddgejgdbdbgg', 'cifjcfjhcajhdiccffbe', 'gaiej', 'ggji', 'ahjebaiadi', 'gbggadbfhfbihfehd', 'ddbgh', 'ihicec', 'adgiiijhejadgcahb', 'ih', 'jfegajhfiiegcghcegdg', 'cahfce', 'bhfefifidbcbdgchd', 'dbehcij', 'hfaicggd', 'jccjge', 'fijcbehgihfgd', 'ejfjdddhaaefdgefea', 'iihahdffiee', 'fbgebehede', 'g', 'aegeefgef', 'jfdbdjb', 'ehfgihbdb', 'bdhjg', 'djbbcdfdcbdb', 'cdiaiebgicfga', 'ghhgidjejbcca', 'beee', 'hbggjggcdfbdbf', 'dcggfjb', 'dce', 'chaajfbbcedcj', 'fhfcicjdajfbjdcjj', 'bddcegcgjecfhfdb', 'gjadf', 'bgcfihg', 'fecifgahfde', 'cidiebibcbgdeddbfh', 'eeede', 'ijbibbgjjcifhdiie', 'jieeigdfdbegh', 'cdieegecbfcceiieh', 'i', 'eaaiiag', 'faeegabjehhcfifgbhfb', 'eejghb', 'cbcchdfhjgdc', 'efahgddgcjiibbe', 'cfbhiebiehibfbgbgaa', 'bjiiiffbfeffjihfhfci', 'agijajhha', 'hbfaiegjdebie', 'ggbcebiifcdi', 'cbfjfccbjabaec', 'fegfbajhia', 'fjiaaibahcdfgjc', 'jg', 'iifcfcghfebhigc', 'dfadcdji', 'dbfgjfif', 'jccfdiabg', 'fieeedebgiifahi', 'cddghbejcj', 'jaeijieiabgdjdibh', 'ggfch', 'jdfehjjeifbfga', 'gjbicdcdecjegaie', 'ijafiihcahaedgdibh', 'cceecic', 'hjaeadehjedc', 'jjhecccfgbbjdfbbhggf', 'degichja', 'ejijgefegddg', 'behcidghfcdhjibjdif', 'hha', 'bggedecejeccacjc', 'cedagiffcdhijcd', 'dagbbdfgc', 'jdiaice', 'ghci', 'hdjfiggiiddbe', 'bfdbcbbacfedce', 'dgjijehadacei', 'ddfdidiedb', 'aifjfbd', 'jacfhde', 'haafcaadjeadicfcbh']));
+// console.log(palindromePairsN2(['bat', 'tab', 'cat']));
+// console.log(palindromePairsN2(['abcd', 'dcba', 'lls', 's', 'sssll']));
+// console.log(palindromePairsN2(['a', 'abc', 'aba', '']));
+// console.log(palindromePairsN2(['efjhhdeiajcaidfd', 'cf', 'agggg', 'hjcijibihjjcfbb', 'cgbdabdfhagabde', 'agijdh', 'ddcghfebfgf', 'ggdjeedegdhcfgif', 'hjbecjdiba', 'gaichfabfdicifgig', 'ejhigebcha', 'jjfjhieebhgihji', 'eibieefiabah', 'cdjjiicaabedg', 'gabdafaagfbeecedcgf', 'jbcjgbgg', 'ccfdbabdhchgaagecgi', 'hefichdahdaceice', 'ghahgcjbgajhgcc', 'ehfg', 'hgdehhfgfjbgjgia', 'hecghg', 'ghbhhhbebidah', 'gaaefcehbjfibehje', 'iegffjiifabgd', 'ciaaibdhjhjigbgi', 'jahgffbcaigdjij', 'cijhfaigbjfbgfh', 'iehfjdeagfhbajdgjb', 'iaehbajgagaagd', 'ddeibjghb', 'deadjeidffjijcafg', 'bchfhgcfe', 'ahg', 'jjafge', 'eecfgfdh', 'aaccfjc', 'gii', 'fibijfggeea', 'ifddeabihe', 'hhhdddjichaca', 'bhfiddbfciab', 'gfafhagfbbbjch', 'bjdahhgiidcchjecigci', 'deifiah', 'dbedjgajhf', 'eijcba', 'dgijabdaacijiae', 'headhgcdcjigdjab', 'iej', 'aggbibjhcdjfagbdb', 'jcgadciacga', 'ajgbbcegghjbicjiacge', 'c', 'agahdedc', 'giidbdbefh', 'dcjaccbch', 'icaa', 'ehcibghiicgfhgadchg', 'bebccffjejjfiif', 'd', 'heccdagabab', 'cb', 'cijffd', 'ga', 'aaaifabdiaeibjde', 'cc', 'faibifaaacecgij', 'aeeed', 'decihfdh', 'fgi', 'dg', 'iaiffgajjfe', 'digfjhjh', 'eejffbbegcaicg', 'ejecdbddhhidjfcejd', 'ibeiff', 'f', 'gdbgeibjjihahfbibij', 'ighbcidgfjggbgic', 'hefjeiah', 'cbbeccjdcjc', 'ecfdbf', 'fjfghec', 'bafceaffacfha', 'cgehdcdf', 'aiifjfdbahaj', 'hf', 'dfhchdfagffb', 'gbja', 'bgeieh', 'ceebich', 'jchiieiegbhgcjf', 'gbgijahbjhjddgb', 'ahfgefiecjbcf', 'cdjjgggbhhifieh', 'af', 'iggbjcibfeda', 'hhgijej', 'fabcijjaijdejji', 'b', 'jbcgbaijja', 'aahjf', 'ihgbcajgaah', 'abdgeijbfjadcacfajci', 'fbgiajj', 'fhfbiie', 'aaiadhjgfagdb', 'cgag', 'ijehbbhdjajg', 'iedaf', 'iaafdcfighd', 'becdaedddeh', 'aadhaabhibfjd', 'fcfgibjc', 'iheacchajcjecjjfc', 'gbdbcgfeh', 'acgddfaaegbeegijghg', 'bghb', 'ggdbihccdgb', 'gfgc', 'cdhgjbdgbb', 'abhichehehahfhbachdd', 'dfhbhabebdgafaj', 'adbcegidbaadfdhiiha', 'jhfaeedihchga', 'jgbfecgegbeicidjadeh', 'giie', 'dccfajfiigc', 'adai', 'defbfiijbfhbfdageibe', 'cjgfbbjd', 'idhbhiegbhgjadfge', 'gjd', 'jdecfbhjjfi', 'ijdcbgfhiacbbjchc', 'gahabjhejfijhhde', 'hcfajbbedibb', 'bajegbbgfh', 'dgeficccjhjiajhffe', 'bh', 'cfghg', 'hjfcfdihbhdjiec', 'dhecjahhbghfegdijgh', 'iececighacfad', 'bijafbacjg', 'fchifaehdichfbae', 'fidaeefbbg', 'fdhafiegdigac', 'agjaadjh', 'hbidjifhffcaafjadf', 'adgibabebdgiedg', 'jaabdbfgecbbiafdih', 'j', 'ejjfcgjbhed', 'gdhhagbiiijagbjegd', 'je', 'jecjedhagigfccf', 'ida', 'hcaefg', 'hghfhjhgfcjf', 'cegdbcechhbgebjjfdc', 'hiciacgibfehafai', 'agiegjgdejda', 'bjehijidaca', 'fja', 'jabeijfdedad', 'hfdhjhhfgbfaih', 'gbehbhdjbfajhfgacg', 'gehdigdihiafiehfhe', 'caefha', 'efiifjegafb', 'hdbhjbdjigbcg', 'id', 'hebchc', 'abdiadihhcjeh', 'hejffbfdig', 'cciaaijicfgegjac', 'ihgehg', 'hhehhgcg', 'gggifbfgfaibige', 'hahfbejidagce', 'hgc', 'dgajaddfcbdcgfeh', 'hadaacfbi', 'jbddbiafghfjf', 'heeggjgedfbdb', 'fgcfc', 'dgbjjj', 'dddefieifcecifaid', 'jicfhhi', 'fbjeiacfjihgehdf', 'geahfddgejgdbdbgg', 'cifjcfjhcajhdiccffbe', 'gaiej', 'ggji', 'ahjebaiadi', 'gbggadbfhfbihfehd', 'ddbgh', 'ihicec', 'adgiiijhejadgcahb', 'ih', 'jfegajhfiiegcghcegdg', 'cahfce', 'bhfefifidbcbdgchd', 'dbehcij', 'hfaicggd', 'jccjge', 'fijcbehgihfgd', 'ejfjdddhaaefdgefea', 'iihahdffiee', 'fbgebehede', 'g', 'aegeefgef', 'jfdbdjb', 'ehfgihbdb', 'bdhjg', 'djbbcdfdcbdb', 'cdiaiebgicfga', 'ghhgidjejbcca', 'beee', 'hbggjggcdfbdbf', 'dcggfjb', 'dce', 'chaajfbbcedcj', 'fhfcicjdajfbjdcjj', 'bddcegcgjecfhfdb', 'gjadf', 'bgcfihg', 'fecifgahfde', 'cidiebibcbgdeddbfh', 'eeede', 'ijbibbgjjcifhdiie', 'jieeigdfdbegh', 'cdieegecbfcceiieh', 'i', 'eaaiiag', 'faeegabjehhcfifgbhfb', 'eejghb', 'cbcchdfhjgdc', 'efahgddgcjiibbe', 'cfbhiebiehibfbgbgaa', 'bjiiiffbfeffjihfhfci', 'agijajhha', 'hbfaiegjdebie', 'ggbcebiifcdi', 'cbfjfccbjabaec', 'fegfbajhia', 'fjiaaibahcdfgjc', 'jg', 'iifcfcghfebhigc', 'dfadcdji', 'dbfgjfif', 'jccfdiabg', 'fieeedebgiifahi', 'cddghbejcj', 'jaeijieiabgdjdibh', 'ggfch', 'jdfehjjeifbfga', 'gjbicdcdecjegaie', 'ijafiihcahaedgdibh', 'cceecic', 'hjaeadehjedc', 'jjhecccfgbbjdfbbhggf', 'degichja', 'ejijgefegddg', 'behcidghfcdhjibjdif', 'hha', 'bggedecejeccacjc', 'cedagiffcdhijcd', 'dagbbdfgc', 'jdiaice', 'ghci', 'hdjfiggiiddbe', 'bfdbcbbacfedce', 'dgjijehadacei', 'ddfdidiedb', 'aifjfbd', 'jacfhde', 'haafcaadjeadicfcbh']));
 
 
 // SOmeone elses solution
@@ -172,4 +263,4 @@ const palindromePairsOther = function (words) {
   return result;
 };
 
-palindromePairsN2(['bat', 'tab', 'cat']);
+// palindromePairsN2(['bat', 'tab', 'cat']);
