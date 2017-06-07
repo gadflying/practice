@@ -1,10 +1,9 @@
 function createBoard(width, height) {
-  const board = Array(height).fill([]);
-  // const board = Array(height).fill(Array(width).fill(0));
-  // console.log('board', board);
-  board.forEach((record, index) => {
+  const board = [...Array(height)];
+  board.forEach((row, index) => {
     board[index] = Array(width).fill(0);
   });
+
   return board;
 }
 
