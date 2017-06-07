@@ -1,12 +1,15 @@
 function createBoard(width, height) {
-  const board = new Array(height).fill(0);
+  const board = Array(height).fill([]);
+  // const board = Array(height).fill(Array(width).fill(0));
+  // console.log('board', board);
   board.forEach((record, index) => {
-    board[index] = new Array(width).fill(0);
+    board[index] = Array(width).fill(0);
   });
   return board;
 }
 
 function addMines(board, width, height, numMines) {
+  const nextBoard = board.slice();
   // Keep track of mines and do not add if repeated
   const addedMines = [];
   while (addedMines.length < numMines && numMines < width * height) {
@@ -14,12 +17,15 @@ function addMines(board, width, height, numMines) {
     const x = Math.floor(Math.random() * width);
     if (!addedMines.includes(`${x},${y}`)) {
       addedMines.push(`${x},${y}`);
-      board[y][x] = '*';
+      nextBoard[y][x] = '*';
     }
   }
+
+  return nextBoard;
 }
 
 function addHints(board, width, height) {
+  const nextBoard = board.slice();
   const deltas = [
     [-1, -1],
     [-1, 0],
@@ -31,26 +37,27 @@ function addHints(board, width, height) {
     [1, 1]
   ];
 
-  board.forEach((row, y) => {
-    row.forEach((recordX, x) => {
-      if (board[y][x] === '*') {
+  nextBoard.forEach((row, y) => {
+    row.forEach((cell, x) => {
+      if (cell === '*') {
         // Consider boundary checking
         deltas.forEach((delta) => {
-          const deltaX = delta[1];
-          const deltaY = delta[0];
+          const [deltaY, deltaX] = delta;
           const withinRange = y + deltaY >= 0
             && y + deltaY < height
             && x + deltaX >= 0
             && x + deltaX < width
-            && board[y + deltaY][x + deltaX] !== '*';
+            && nextBoard[y + deltaY][x + deltaX] !== '*';
 
           if (withinRange) {
-            board[y + deltaY][x + deltaX] += 1;
+            nextBoard[y + deltaY][x + deltaX] += 1;
           }
         });
       }
     });
   });
+
+  return nextBoard;
 }
 
 function printBoard(board) {
@@ -61,13 +68,13 @@ function printBoard(board) {
 
 function generateBoard(width, height, numMines) {
   // Step 1: Create board
-  const board = createBoard(width, height);
+  let board = createBoard(width, height);
 
   // Step 2: Add Mines
-  addMines(board, width, height, numMines);
+  board = addMines(board, width, height, numMines);
 
   // Step 3: Add hints
-  addHints(board, width, height);
+  board = addHints(board, width, height);
 
   // Step 4; Print board
   printBoard(board);
