@@ -1,41 +1,41 @@
 function createBoard(width, height) {
-	const board = new Array(height).fill(0);
+  const board = new Array(height).fill(0);
   board.forEach((record, index) => {
     board[index] = new Array(width).fill(0);
   });
   return board;
 }
 
-function addMines(board, width, height, number_of_mines) {
+function addMines(board, width, height, numMines) {
   // Keep track of mines and do not add if repeated
   const addedMines = [];
-  while(addedMines.length < number_of_mines && number_of_mines < width * height) {
+  while (addedMines.length < numMines && numMines < width * height) {
     const y = Math.floor(Math.random() * height);
     const x = Math.floor(Math.random() * width);
     if (!addedMines.includes(`${x},${y}`)) {
-    	addedMines.push(`${x},${y}`);
-    	board[y][x] = '*';
+      addedMines.push(`${x},${y}`);
+      board[y][x] = '*';
     }
   }
 }
 
 function addHints(board, width, height) {
-	const deltas = [
-  	[-1, -1],
+  const deltas = [
+    [-1, -1],
     [-1, 0],
     [-1, 1],
     [0, -1],
     [0, 1],
-		[1, -1],
+    [1, -1],
     [1, 0],
     [1, 1]
   ];
 
-	board.forEach((row, y) => {
-  	row.forEach((recordX, x) => {
-    	if (board[y][x] === '*') {
-      	// Consider boundary checking
-				deltas.forEach(delta => {
+  board.forEach((row, y) => {
+    row.forEach((recordX, x) => {
+      if (board[y][x] === '*') {
+        // Consider boundary checking
+        deltas.forEach((delta) => {
           const deltaX = delta[1];
           const deltaY = delta[0];
           const withinRange = y + deltaY >= 0
@@ -45,7 +45,7 @@ function addHints(board, width, height) {
             && board[y + deltaY][x + deltaX] !== '*';
 
           if (withinRange) {
-        	  board[y + deltaY][x + deltaX] += 1;
+            board[y + deltaY][x + deltaX] += 1;
           }
         });
       }
@@ -54,18 +54,17 @@ function addHints(board, width, height) {
 }
 
 function printBoard(board) {
-	board.forEach(y => {
-  	console.log(y.join(''));
-  })
+  board.forEach((y) => {
+    console.log(y.join(''));
+  });
 }
 
-function generate_board(width, height, number_of_mines) {
-
+function generateBoard(width, height, numMines) {
   // Step 1: Create board
   const board = createBoard(width, height);
 
   // Step 2: Add Mines
-  addMines(board, width, height, number_of_mines);
+  addMines(board, width, height, numMines);
 
   // Step 3: Add hints
   addHints(board, width, height);
@@ -74,4 +73,4 @@ function generate_board(width, height, number_of_mines) {
   printBoard(board);
 }
 
-generate_board(5, 7, 34);
+generateBoard(5, 5, 4);
