@@ -27,6 +27,12 @@ const CARDS = {
     length: 15,
     id: 'amex',
   },
+  other: {
+    name: 'Other',
+    template: '#### - #### - #### - ####'.split('#'),
+    length: 16,
+    id: 'other',
+  },
 };
 
 class CC extends React.Component {
@@ -34,7 +40,7 @@ class CC extends React.Component {
     super(props);
     this.state = {
       cc: '',
-      card: {},
+      card: CARDS.other,
     }
 
     this.cleanData = this.cleanData.bind(this);
@@ -47,15 +53,14 @@ class CC extends React.Component {
 
   // Clean input
   cleanData(data = '', card = {}) {
-    const { cc } = this.state;
     const cleaned = data.replace(/\D/g, '').slice(0, card.length || 16);
     return cleaned;
   }
 
   onCCChange(event) {
-    const { value } = event.target;
-    const card = this.getCard(value);
-    const cleaned = this.cleanData(value, card);
+    const { value: cc = '' } = event.target;
+    const card = this.getCard(cc);
+    const cleaned = this.cleanData(cc, card);
     this.setState({ cc: cleaned, card });
   }
 
@@ -79,11 +84,7 @@ class CC extends React.Component {
       return card.prefix === +value[0];
     });
 
-    return CARDS[foundCard] || {
-      name: '',
-      template: '#### - #### - #### - ####'.split('#'),
-      length: 16,
-    };
+    return CARDS[foundCard] || CARDS.other;
   }
 
   // Format input
@@ -108,7 +109,7 @@ class CC extends React.Component {
       }
 
       return jsx.concat(
-        <span id={cardKey} key={cardKey} className={classes.join(' ')}>{name}</span>
+        <span key={cardKey} className={classes.join(' ')}>{name}</span>
       );
     }, []);
     return cardJsx;
@@ -116,7 +117,7 @@ class CC extends React.Component {
 
   // Highlight card type
   render() {
-    const { cc = '', card } = this.state;
+    const { cc = '', card = CARDS.other } = this.state;
     const formatted = this.formatData(cc, card);
     return (
       <div>
@@ -127,7 +128,7 @@ class CC extends React.Component {
           onChange={this.onCCChange}
           onKeyDown={this.onCCKeyDown}
           value={formatted}
-          placeholder={'#### - #### - #### - ####'}
+          placeholder={card.template.join('#')}
         />
       </div>
     );
