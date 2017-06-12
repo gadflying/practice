@@ -38,7 +38,7 @@ Output: 1
  * @param {number[]} coins
  * @return {number}
  */
-const coinChange = (amount, coins) => {
+const coinChange2 = (amount, coins) => {
   if (amount <= 0) {
     return [];
   }
@@ -79,4 +79,27 @@ const coinChange = (amount, coins) => {
   return allCombos;
 };
 
-console.log(coinChange(7, [3, 2, 1]));
+// console.log(coinChange2(7, [3, 2, 1]));
+
+const coinChange1 = (amount, coins) => {
+  if (amount <= 0) {
+    return [];
+  }
+
+  if ((coins || []).length === 0) {
+    return [];
+  }
+
+  const sortedCoins = (coins || []).slice().sort((a, b) => b - a);
+  const coin = coins[0];
+  const int = Math.floor(amount / coin);
+
+  const combos = Array(int)
+    .fill(coin)
+    .concat(coinChange1(amount - (int * coin), sortedCoins.slice(1)));
+
+  return combos.reduce((total, num) => total + num, 0) === amount ? combos : [];
+};
+
+console.log(coinChange1(3, [5, 2]));
+console.log(coinChange1(80, [25, 10]));
