@@ -6,7 +6,7 @@
  * typeof(obj) === "object" [and !isArray]
  */
 
-const myJsonEncode = (obj) => {
+const myJsonEncode = (obj = null) => {
   // YOUR CODE HERE
 
   // Things to consider
@@ -21,7 +21,7 @@ const myJsonEncode = (obj) => {
   // Iterate through the object
   // Object.keys() go through the object
 
-  if (!obj || obj === null) {
+  if (!obj) {
     return 'null';
   }
 
@@ -56,3 +56,4 @@ const myJsonEncode = (obj) => {
 };
 
 console.log(myJsonEncode({ a: ['hello', 1, 2, { b: 'world' }] }));
+console.log(myJsonEncode());
