@@ -7,29 +7,19 @@
  */
 
 const myJsonEncode = (obj = null) => {
-  // YOUR CODE HERE
-
-  // Things to consider
-  // Symmetry: every open has a close
-  // Need to know types:
-  // Iterate through the obj
-
-  // If array, push open bracket in first array
-  // in separate array, push the close bracket.
-  // At the end, reverse the array, and do a join()
-
-  // Iterate through the object
-  // Object.keys() go through the object
-
-  if (!obj) {
+  if (obj === null) {
     return 'null';
   }
 
-  if (typeof (obj) === 'number') {
+  if (typeof obj === 'boolean') {
     return `${obj}`;
   }
 
-  if (typeof (obj) === 'string') {
+  if (typeof obj === 'number') {
+    return `${obj}`;
+  }
+
+  if (typeof obj === 'string') {
     return `"${obj}"`;
   }
 
@@ -41,7 +31,7 @@ const myJsonEncode = (obj = null) => {
     return `[${json.join(', ')}]`;
   }
 
-  if (typeof (obj) === 'object' && !Array.isArray(obj)) {
+  if (typeof obj === 'object' && !Array.isArray(obj)) {
     const json = [];
     const keys = Object.keys(obj);
     keys.forEach((key) => {
@@ -55,5 +45,5 @@ const myJsonEncode = (obj = null) => {
   return '';
 };
 
-console.log(myJsonEncode({ a: ['hello', 1, 2, { b: 'world' }] }));
+console.log(myJsonEncode({ a: ['hello', 1, 2, { b: false }] }));
 console.log(myJsonEncode());
