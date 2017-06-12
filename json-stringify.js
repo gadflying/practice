@@ -6,7 +6,7 @@
  * typeof(obj) === "object" [and !isArray]
  */
 
-var my_json_encode = function(obj) {
+const myJsonEncode = (obj) => {
   // YOUR CODE HERE
 
   // Things to consider
@@ -22,51 +22,37 @@ var my_json_encode = function(obj) {
   // Object.keys() go through the object
 
   if (!obj || obj === null) {
-      return 'null';
+    return 'null';
   }
 
-  if (typeof(obj) === "number") {
-      return obj + "";
+  if (typeof (obj) === 'number') {
+    return `${obj}`;
   }
 
-  if (typeof(obj) === "string") {
-      return `"${obj}"`;
+  if (typeof (obj) === 'string') {
+    return `"${obj}"`;
   }
 
   if (Array.isArray(obj)) {
     const json = [];
     obj.forEach((item) => {
-        json.push(my_json_encode(item));
+      json.push(myJsonEncode(item));
     });
-    return `[${json.join(', ')}]`
+    return `[${json.join(', ')}]`;
   }
 
-  if (typeof(obj) === "object" && !Array.isArray(obj)) {
-      const json = [];
-      const keys = Object.keys(obj);
-      keys.forEach((key) => {
-          const value = obj[key];
-          json.push(`"${key}": ${my_json_encode(value)}`);
-      });
+  if (typeof (obj) === 'object' && !Array.isArray(obj)) {
+    const json = [];
+    const keys = Object.keys(obj);
+    keys.forEach((key) => {
+      const value = obj[key];
+      json.push(`"${key}": ${myJsonEncode(value)}`);
+    });
 
-      return `{${json.join(', ')}}`;
+    return `{ ${json.join(', ')} }`;
   }
 
-  return "";
-}
+  return '';
+};
 
-process.stdin.resume();
-process.stdin.setEncoding("ascii");
-
-var input = "";
-var parsed_input;
-
-process.stdin.on("data", function (chunk) {
-    input += chunk;
-});
-process.stdin.on("end", function () {
-	parsed_input = JSON.parse(input);
-    output = my_json_encode(parsed_input);
-
-    process.stdout.write(output);
-});
+console.log(myJsonEncode({ a: ['hello', 1, 2, { b: 'world' }] }));
