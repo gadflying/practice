@@ -1,49 +1,58 @@
-/* Write your function here. Useful type checking functions:
- *
- * typeof(obj) === "string"
- * typeof(obj) === "number"
- * Array.isArray(obj) === true
- * typeof(obj) === "object" [and !isArray]
- */
-
-const myJsonEncode = (obj = null) => {
-  if (obj === null) {
+const stringify = (value) => {
+  // null
+  if ([null, Infinity, -Infinity, NaN].includes(value)) {
     return 'null';
   }
 
-  if (typeof obj === 'boolean') {
-    return `${obj}`;
+  // boolean
+  if (typeof value === 'boolean') {
+    return `${value}`;
   }
 
-  if (typeof obj === 'number') {
-    return `${obj}`;
+  // number
+  if (typeof value === 'number') {
+    return `${value}`;
   }
 
-  if (typeof obj === 'string') {
-    return `"${obj}"`;
+  // string
+  if (typeof value === 'string') {
+    return `"${value}"`;
   }
 
-  if (Array.isArray(obj)) {
+  // array
+  if (Array.isArray(value)) {
     const json = [];
-    obj.forEach((item) => {
-      json.push(myJsonEncode(item));
+    value.forEach((item) => {
+      json.push(stringify(item));
     });
-    return `[${json.join(', ')}]`;
+    return `[ ${json.join(', ')} ]`;
   }
 
-  if (typeof obj === 'object' && !Array.isArray(obj)) {
+  // object
+  if (typeof value === 'object' && !Array.isArray(value)) {
     const json = [];
-    const keys = Object.keys(obj);
+    const keys = Object.keys(value);
     keys.forEach((key) => {
-      const value = obj[key];
-      json.push(`"${key}": ${myJsonEncode(value)}`);
-    });
+      const keyValue = value[key];
+      json.push(`"${key}": ${stringify(keyValue)}`);
+    })
 
     return `{ ${json.join(', ')} }`;
   }
 
-  return '';
-};
+  return undefined;
+}
 
-console.log(myJsonEncode({ a: ['hello', 1, 2, { b: false }] }));
-console.log(myJsonEncode());
+console.log(stringify());
+console.log(stringify(null));
+console.log(stringify({ a: ['hello', 1, 2, { b: false }] }));
+console.log(stringify(true));
+console.log(stringify(false));
+console.log(stringify(4));
+console.log(stringify(Infinity));
+console.log(stringify(-Infinity));
+console.log(stringify(NaN));
+console.log(stringify('cat'));
+console.log(stringify([1, 2, 3, 'cat', [4, 5, Infinity, NaN, 'dog', { key: Infinity }]]));
+console.log(stringify({ fruit: 'apple' }));
+console.log(stringify({ on: true, fruit: 'apple', car: ['mazda', 'toyota', 5, 7] }));
